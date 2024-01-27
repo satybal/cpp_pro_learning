@@ -16,6 +16,7 @@ jobs:
         with:
           submodules: true
       - run: cd 01_helloworld
+      - run: ls
       - run: sudo apt-get update && sudo apt-get install cmake libgtest-dev -y
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
