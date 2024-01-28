@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ip_filter)
+set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
+set(PROJECT_VERSION 0.0.${PATCH_VERSION})
+
+project(ip_filter VERSION ${PROJECT_VERSION})
 
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
