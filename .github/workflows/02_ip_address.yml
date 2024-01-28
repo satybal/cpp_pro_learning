@@ -13,16 +13,18 @@ jobs:
     permissions: write-all
     defaults:
       run:
-        working-directory: ./01_helloworld
+        working-directory: ./02_ipaddress
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
       - run: sudo apt-get update && sudo apt-get install cmake libgtest-dev -y
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      - run: cmake . -DINSTALL_GTEST=NO
       - run: cmake --build .
       - run: cmake --build . --target test
       - run: cmake --build . --target package
+      - run: ./test_filter
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -40,6 +42,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./01_helloworld/helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
+          asset_path: ./02_ipaddress/ipaddress-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: ipaddress-0.0.${{ github.run_number }}-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
