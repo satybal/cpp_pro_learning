@@ -16,12 +16,17 @@ add_executable(ip_filter
     main.cpp
 )
 
-target_link_libraries(ip_filter PRIVATE
-    filter
+set_target_properties(ip_filter filter test_filter PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
 )
 
 target_include_directories(filter
     PRIVATE "${CMAKE_BINARY_DIR}"
+)
+
+target_link_libraries(ip_filter PRIVATE
+    filter
 )
 
 add_executable(test_filter
@@ -49,11 +54,6 @@ else ()
         -Wall -Wextra -pedantic -Werror
     )
 endif()
-
-set_target_properties(ip_filter filter test_filter PROPERTIES
-    CXX_STANDARD 14
-    CXX_STANDARD_REQUIRED ON
-)
 
 install(TARGETS ip_filter RUNTIME DESTINATION bin)
 
