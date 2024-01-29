@@ -9,11 +9,15 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 add_library(filter 
-    ip_filter.cpp
+ip_filter.cpp
 )
 
 add_executable(ip_filter
-    main.cpp
+main.cpp
+)
+
+add_executable(test_filter
+    test_filter.cpp 
 )
 
 set_target_properties(ip_filter filter test_filter PROPERTIES
@@ -27,10 +31,6 @@ target_include_directories(filter
 
 target_link_libraries(ip_filter PRIVATE
     filter
-)
-
-add_executable(test_filter
-    test_filter.cpp 
 )
 
 if (MSVC)
