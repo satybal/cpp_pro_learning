@@ -1,5 +1,0 @@
-if(EXISTS "/home/timur/CPP_basic/cpp_pro_learning/homeworks/build/test_version[1]_tests.cmake")
-  include("/home/timur/CPP_basic/cpp_pro_learning/homeworks/build/test_version[1]_tests.cmake")
-else()
-  add_test(test_version_NOT_BUILT test_version_NOT_BUILT)
-endif()

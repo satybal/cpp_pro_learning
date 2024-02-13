@@ -3,7 +3,7 @@ name: 'C++ CI'
 on:
   push:
     branches:
-      - main
+      - 01_helloworld
       - feature/github_actions
   workflow_dispatch:
 
@@ -11,9 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions: write-all
-    defaults:
-      run:
-        working-directory: ./01_helloworld
     steps:
       - uses: actions/checkout@v3
         with:
@@ -42,6 +39,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./01_helloworld/helloworld-0.0.${{ github.run_number }}-Linux.deb
+          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
           asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
