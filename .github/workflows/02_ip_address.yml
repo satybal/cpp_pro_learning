@@ -16,7 +16,7 @@ jobs:
         with:
           submodules: true
       - run: sudo apt-get update && sudo apt-get install cmake libgtest-dev -y
-      - run: cmake . -DINSTALL_GTEST=NO
+      # - run: cmake . -DINSTALL_GTEST=NO
       - run: cmake .
       - run: cmake --build .
       - run: cmake --build . --target test
