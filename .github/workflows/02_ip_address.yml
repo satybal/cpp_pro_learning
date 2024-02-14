@@ -27,10 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 02.1
-          # tag_name: 02.${{ github.run_number }}
-          release_name: IP Addresses Release 1
-          # release_name: IP Addresses Release ${{ github.run_number }}
+          tag_name: 02.${{ github.run_number }}
+          release_name: IP Addresses Release ${{ github.run_number }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
