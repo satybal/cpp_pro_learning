@@ -2,7 +2,6 @@
 #include "ip_filter.hpp"
 
 int main(int, char **) {
-
     try
     {
         std::vector<std::vector<std::string>> ip_pool;
