@@ -3,17 +3,12 @@
 
 int main(int, char **) {
 
-    std::ifstream in_file {"ip_filter.tsv"};
-    if (!in_file.is_open()) {
-        std::cout << "Failed to open file ip_filter.tsv!" << std::endl;
-        return -1;
-    }
-
     try
     {
         std::vector<std::vector<std::string>> ip_pool;
+        std::string line;
 
-        for(std::string line; std::getline(in_file, line);)
+        while (std::getline(std::cin, line))
         {
             std::vector<std::string> v = split(line, '\t');
             ip_pool.push_back(split(v.at(0), '.'));
