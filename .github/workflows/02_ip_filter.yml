@@ -2,9 +2,8 @@ name: 'C++ CI'
 
 on:
   push:
-    branches:
-      - main
-      - feature/github_actions
+    paths:
+      - '02_ip_filter/**'
   workflow_dispatch:
 
 jobs:
@@ -13,7 +12,7 @@ jobs:
     permissions: write-all
     defaults:
       run:
-        working-directory: ./02_ipaddress
+        working-directory: 02_ip_filter
     steps:
       - uses: actions/checkout@v3
         with:
@@ -31,7 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 02.${{ github.run_number }}
-          release_name: IP Addresses Release ${{ github.run_number }}
+          release_name: IP Filter Release ${{ github.run_number }}
           draft: false
           prerelease: false
       - run: ls
@@ -42,6 +41,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./02_ipaddress/ipaddress-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: ipaddress-0.0.${{ github.run_number }}-Linux.deb
+          asset_path: ./02_ip_filter/ip_filter-0.0.2-Linux.deb
+          asset_name: ip_filter-0.0.2-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
