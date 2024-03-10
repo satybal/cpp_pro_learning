@@ -7,6 +7,9 @@
 
 using namespace std;
 
+/*!
+    * Converts 8-bit number to decimal
+*/
 int byte_to_decimal(const char* number) {
     auto result = 0;
 
@@ -18,6 +21,10 @@ int byte_to_decimal(const char* number) {
     return result;
 }
 
+/*!
+    * Converts binary string byte by byte to decimals
+    * and prints with '.' separator
+*/
 void print_binary(const string& binary) {
     cout << byte_to_decimal(binary.substr(0, 8).c_str());
 
@@ -54,7 +61,9 @@ namespace _tuple {
     }
 } // _tuple
 
-// numbers
+/*!
+    * Template function for integral types
+*/
 template <class T>
 enable_if_t<std::is_integral<T>::value, void>
 print_ip(const T& value)
@@ -63,7 +72,9 @@ print_ip(const T& value)
     print_binary(binary);
 }
 
-// containers
+/*!
+    * Template function for containers
+*/
 template <class T>
 enable_if_t<_container::is_container<T>::value, void>
 print_ip(const T& value) {
@@ -76,14 +87,18 @@ print_ip(const T& value) {
     }
 }
 
-// string
+/*!
+    * Template function for strings
+*/
 template <class T>
 enable_if_t<is_same_v<T, string>, void>
 print_ip(const T& value) {
     cout << value << endl;
 }
 
-// tuple
+/*!
+    * Template function for tuples
+*/
 template<class... Args>
 void print_ip(const tuple<Args...>& value) {
      _tuple::print_tuple(value);

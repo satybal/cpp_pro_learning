@@ -3,7 +3,7 @@ name: 'C++ CI'
 on:
   push:
     paths:
-      - '04_templates/**'
+      - "04_templates/**"
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
     permissions: write-all
     defaults:
       run:
-        working-directory: 04_templates
+        working-directory: "./04_templates"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -42,3 +42,15 @@ jobs:
           asset_path: ./04_templates/print_ip-0.0.1-Linux.deb
           asset_name: print_ip-0.0.1-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
+
+      - name: Doxygen Action
+        uses: mattnotmitt/doxygen-action@v1.1.0
+        with:
+          doxyfile-path: "./04_templates/Doxyfile"
+          working-directory: "./04_templates"
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./generated-docs/html
