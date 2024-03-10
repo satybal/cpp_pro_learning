@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 04.${{ github.run_number }}
-          release_name: Allocator Release ${{ github.run_number }}
+          release_name: Template Release ${{ github.run_number }}
           draft: false
           prerelease: false
           
