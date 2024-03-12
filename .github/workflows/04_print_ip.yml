@@ -47,7 +47,7 @@ jobs:
         uses: mattnotmitt/doxygen-action@v1.1.0
         with:
           doxyfile-path: "./Doxyfile"
-          # working-directory: "./04_templates"
+          working-directory: "./04_templates"
 
       - name: GH Pages Deployment
         uses: peaceiris/actions-gh-pages@v3
