@@ -38,17 +38,23 @@ void print_binary(const string& binary) {
 }
 
 namespace _container {
-    template <typename T>
-    struct is_container: false_type {};
+    template < typename T >
+    struct is_container : false_type {};
 
-    template <typename T, typename Alloc>
-    struct is_container<vector<T, Alloc>>: true_type {};
+    template < typename T, typename Alloc >
+    struct is_container<vector<T, Alloc>> : true_type {};
 
-    template <typename T, typename Alloc>
-    struct is_container<list<T, Alloc>>: true_type {};
+    template < typename T, typename Alloc >
+    struct is_container<list<T, Alloc>> : true_type {};
 } // _container
 
 namespace _tuple {
+    template <typename T>
+    struct is_tuple : false_type {};
+
+    template <typename ...Args>
+    struct is_tuple<tuple<Args...>> : true_type {};
+
     template <size_t i = 0, typename ...T>
     typename enable_if< i == sizeof...(T), void >::type
     print_tuple(const tuple<T...>&) {}
@@ -59,13 +65,14 @@ namespace _tuple {
         i == 0 ? cout << get<i>(t) : cout << "." << get<i>(t);
         print_tuple< i + 1, T... >(t);
     }
+
 } // _tuple
 
 /*!
     * Template function for integral types
 */
 template <class T>
-enable_if_t<std::is_integral<T>::value, void>
+enable_if_t<is_integral<T>::value, void>
 print_ip(const T& value)
 {
     string binary = bitset<sizeof(value) * 8>(value).to_string();
@@ -75,7 +82,7 @@ print_ip(const T& value)
 /*!
     * Template function for containers
 */
-template <class T>
+template<typename T>
 enable_if_t<_container::is_container<T>::value, void>
 print_ip(const T& value) {
     if (!value.empty()) {
@@ -99,8 +106,9 @@ print_ip(const T& value) {
 /*!
     * Template function for tuples
 */
-template<class... Args>
-void print_ip(const tuple<Args...>& value) {
-     _tuple::print_tuple(value);
+template<class T>
+enable_if_t<_tuple::is_tuple<T>::value, void>
+print_ip(const T& value) {
+    _tuple::print_tuple(value);
     cout << endl;
 }
