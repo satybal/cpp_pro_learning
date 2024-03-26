@@ -14,7 +14,7 @@ template <class T, size_t Size>
 struct Allocator {
     using value_type = T;
 
-    Allocator() noexcept:
+    Allocator():
         pool_size { Size },
         mem_busy { 0 },
         mem_pool { ::operator new(sizeof(T) * pool_size), deleter() }
@@ -33,19 +33,21 @@ struct Allocator {
     T* allocate (std::size_t n) 
     {
         mem_busy += n;
-        return pointer + mem_busy - n;
+
+        if (mem_busy > pool_size) 
+            throw std::bad_alloc{};
+        
+        return pool_pointer + mem_busy - n;
     }
 
     void deallocate (T*, std::size_t) 
-    {
-        mem_busy = 0;
-    }
+    {}
 
 private:
     size_t pool_size;
     size_t mem_busy;
     std::shared_ptr<void> mem_pool;
-    T* pointer = static_cast<T*>(mem_pool.get());
+    T* pool_pointer = static_cast<T*>(mem_pool.get());
 };
 
 template <class T, class U, size_t Size>

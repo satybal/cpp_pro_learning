@@ -35,7 +35,7 @@ int main() {
     print_map(fill_map(pool_map));
 
     std::cout << "## Simple vector with std::allocator" << std::endl;
-    Container<int, 10> con1;
+    Container<int> con1;
     for (auto i = 0; i < 10; ++i) 
         con1.push_back(i);
     for (auto i = 0; i < 10; ++i) 
@@ -43,7 +43,7 @@ int main() {
     std::cout << std::endl << std::endl;
 
     std::cout << "## Simple vector with pool allocator" << std::endl;
-    Container<int, 10, Allocator<int, 10>> con;
+    Container<int, Allocator<int, 30>> con;
     for (auto i = 0; i < 10; ++i) 
         con.push_back(i);
     for (auto i = 0; i < 10; ++i) 
