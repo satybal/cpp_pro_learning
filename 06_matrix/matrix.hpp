@@ -2,104 +2,51 @@
 
 using namespace std;
 
-template <typename T, int DMS>
+// MATRIX N-dimentions
+template <typename T, int DMS, T defval>
 class Matrix
 {
-    // friend class iterator;
-    using Layer = Matrix<T, DMS - 1>;
-
-    Layer* _end = new Layer;
-    Layer* _begin = _end;
-
 public:
-    
+    using Layer = Matrix<T, DMS - 1, defval>;
+
     T key;
     Matrix* next;
 
-    // class iterator
-    // {
-    //     friend class IMatrix;
-
-    //     Layer* ptr;
-
-    //     iterator(Layer* ptr): ptr(ptr) {}
-
-    // public:
-
-    //     iterator(const iterator& it): ptr(it.ptr) {}
-
-    //     bool operator!=(const iterator& other)
-    //     {
-    //         return this->ptr != other.ptr;
-    //     }
-
-    //     bool operator==(const iterator& other)
-    //     {
-    //         return this->ptr == other.ptr;
-    //     }
-
-    //     iterator operator++()
-    //     {
-    //         ptr = ptr->next;
-    //         return *this;
-    //     }
-
-    //     Layer& operator*()
-    //     {
-    //         return *ptr;
-    //     }
-
-    //     Layer* pointer()
-    //     {
-    //         return ptr;
-    //     }
-
-    // };
-
-    // iterator begin()
-    // {
-    //     return _begin;
-    // }
-
-    // iterator end()
-    // {
-    //     return _end;
-    // }
-
     ~Matrix()
     {
-        auto iter = _begin;
-        while (_begin != _end)
+        auto iter = head;
+        while (head != tail)
         {
-            _begin = iter->next;
+            head = iter->next;
             delete iter;
-            iter = _begin;
+            iter = head;
         }
 
-        delete _end;
+        delete tail;
     }
 
-    Layer* find(const T& key)
+    Layer* find(const T& key) const
     {
-        auto iter = _begin;
-        while (iter->key != key && iter != _end)
+        auto iter = head;
+        while (iter->key != key && iter != tail)
             iter = iter->next;
 
         return iter;
     }
 
-    Layer& operator[](const T& key)
+    // Layer& operator[](const T& key)
+    Layer& push(const T& key)
     {
         auto iter = find(key);
 
-        if (iter != _end)
+        if (iter != tail)
             return *iter;
         else
         {
-            auto newLayer = _end;
+            auto newLayer = tail;
 
             Layer* newEnd = new Layer;
-            _end = newEnd;
+            tail = newEnd;
 
             newLayer->key = key;
             newLayer->next = newEnd;
@@ -108,13 +55,18 @@ public:
         }
     }
 
-    // TODO const operator[]
+    const Layer& operator[](const T& key) const
+    {
+        auto iter = find(key);
+        return *iter;
+    }
 
-    int size()
+
+    int size() const
     {
         int sz = 0;
-        auto iter = _begin;
-        while (iter != _end)
+        auto iter = head;
+        while (iter != tail)
         {
             sz += iter->size();
             iter = iter->next;
@@ -122,24 +74,29 @@ public:
 
         return sz;
     }
+private:
+    Layer* tail = new Layer;
+    Layer* head = tail;
 };
 
-template <typename T>
-class Matrix<T, 0>
+// MATRIX 0-dimention
+template <typename T, T defval>
+class Matrix<T, 0, defval>
 {
-    T data;
-
 public:
+    Matrix():
+        data(defval) {}
 
     T key;
     Matrix* next;
 
-    T& operator=(const T& value)
+    Matrix& operator=(const T& value)
     {
-        return data = value;
+        this->data = value;
+        return *this;
     }
 
-    int size()
+    int size() const
     {
         return 1;
     }
@@ -150,4 +107,6 @@ public:
         out << m.data;
         return out;
     }
+private:
+    T data;
 };
