@@ -1,112 +1,56 @@
-#include <iostream>
+#pragma once
 
-using namespace std;
+#include "row.hpp"
 
-// MATRIX N-dimentions
-template <typename T, int DMS, T defval>
-class Matrix
+template <typename T, T defval>
+struct Matrix : public Observer
 {
-public:
-    using Layer = Matrix<T, DMS - 1, defval>;
+    using TRow = Row<T, defval>;
+    using URow = unique_ptr<TRow>;
 
-    T key;
-    Matrix* next;
+    list<URow> rows;
+    URow empty_row = URow(new TRow);
 
-    ~Matrix()
+    TRow& operator[](const int& key)
     {
-        auto iter = head;
-        while (head != tail)
-        {
-            head = iter->next;
-            delete iter;
-            iter = head;
-        }
+        auto it = find_if(rows.begin(),
+                          rows.end(),
+                          [&] (auto& c) { return key == c->key; });
 
-        delete tail;
-    }
-
-    Layer* find(const T& key) const
-    {
-        auto iter = head;
-        while (iter->key != key && iter != tail)
-            iter = iter->next;
-
-        return iter;
-    }
-
-    // Layer& operator[](const T& key)
-    Layer& push(const T& key)
-    {
-        auto iter = find(key);
-
-        if (iter != tail)
-            return *iter;
+        if (it != rows.end())
+            return **it;
         else
         {
-            auto newLayer = tail;
+            empty_row->key = key;
+            empty_row->addObserver(this);
 
-            Layer* newEnd = new Layer;
-            tail = newEnd;
-
-            newLayer->key = key;
-            newLayer->next = newEnd;
-
-            return *newLayer;
+            return *empty_row;
         }
     }
 
-    const Layer& operator[](const T& key) const
+    virtual void update() override
     {
-        auto iter = find(key);
-        return *iter;
+        rows.remove_if([](auto& r){ return r->size() == 0; });
+        rows.push_back(std::move(empty_row));
+        empty_row = URow(new TRow);
     }
 
+    int size()
+    {   
+        int _size = 0;
+        for (auto &row: rows)
+            _size += row->size();
 
-    int size() const
-    {
-        int sz = 0;
-        auto iter = head;
-        while (iter != tail)
-        {
-            sz += iter->size();
-            iter = iter->next;
-        }
-
-        return sz;
-    }
-private:
-    Layer* tail = new Layer;
-    Layer* head = tail;
-};
-
-// MATRIX 0-dimention
-template <typename T, T defval>
-class Matrix<T, 0, defval>
-{
-public:
-    Matrix():
-        data(defval) {}
-
-    T key;
-    Matrix* next;
-
-    Matrix& operator=(const T& value)
-    {
-        this->data = value;
-        return *this;
+        return _size;
     }
 
-    int size() const
+    void print()
     {
-        return 1;
+        for(auto& r: rows)
+            for (auto& c: r->cells)
+                cout << "matrix ["
+                     << r->key << "][" 
+                     << c->key << "]: "
+                     << c->data << endl;
     }
-    
-    friend std::ostream& operator<<
-        (std::ostream &out, const Matrix& m)
-    {
-        out << m.data;
-        return out;
-    }
-private:
-    T data;
 };
