@@ -1,56 +1,132 @@
-#pragma once
+#include <unordered_map>
+#include <iostream>
+#include <memory>
 
-#include "row.hpp"
+using namespace std;
 
-template <typename T, T defval>
-struct Matrix : public Observer
+template <typename T, int DMS, T defval>
+class Matrix
 {
-    using TRow = Row<T, defval>;
-    using URow = unique_ptr<TRow>;
+public:
+    using UpLayer   = Matrix<T, DMS + 1, defval>; 
+    using DownLayer = Matrix<T, DMS - 1, defval>;
 
-    list<URow> rows;
-    URow empty_row = URow(new TRow);
-
-    TRow& operator[](const int& key)
+    DownLayer& operator[](const T& key)
     {
-        auto it = find_if(rows.begin(),
-                          rows.end(),
-                          [&] (auto& c) { return key == c->key; });
-
-        if (it != rows.end())
-            return **it;
+        m_key = key;
+        if (m_line.contains(key))
+            return *(m_line[key]);
         else
         {
-            empty_row->key = key;
-            empty_row->addObserver(this);
-
-            return *empty_row;
+            new_layer->set_up_layer(this);
+            return *new_layer;
         }
     }
 
-    virtual void update() override
+    template <int D = DMS>
+    typename enable_if< (D == 1), void >::type
+    update()
     {
-        rows.remove_if([](auto& r){ return r->size() == 0; });
-        rows.push_back(std::move(empty_row));
-        empty_row = URow(new TRow);
+        m_line[m_key] = move(new_layer);
+
+        if (m_line.size() == 1)
+            up->update();
+
+        new_layer = unique_ptr<DownLayer>(new DownLayer);
     }
 
-    int size()
-    {   
+    template <int D = DMS>
+    typename enable_if< (D > 1), void >::type
+    update() 
+    {
+        m_line[m_key] = move(new_layer);
+        new_layer = unique_ptr<DownLayer>(new DownLayer);
+    }
+
+    template <int D = DMS>
+    typename enable_if<(D > 1), int>::type
+    size()
+    {
         int _size = 0;
-        for (auto &row: rows)
-            _size += row->size();
+
+        for (auto& [key, value]: m_line)
+            _size += value->size();
 
         return _size;
     }
 
-    void print()
+    template <int D = DMS>
+    typename enable_if< (D == 1), int>::type
+    size()
     {
-        for(auto& r: rows)
-            for (auto& c: r->cells)
-                cout << "matrix ["
-                     << r->key << "][" 
-                     << c->key << "]: "
-                     << c->data << endl;
+        return m_line.size();
     }
+
+    void set_up_layer(UpLayer* u)
+    {
+        up = u;
+    }
+
+    template <int D = DMS>
+    typename enable_if<(D == 1), void>::type
+    erase()
+    {
+        m_line.erase(m_key);
+        if (m_line.empty())
+            up->erase();
+    }
+
+    template <int D = DMS>
+    typename enable_if<(D > 1), void>::type
+    erase()
+    {
+        m_line.erase(m_key);
+    }
+
+private:
+    T m_key;
+    UpLayer* up;
+    unordered_map<T, unique_ptr<DownLayer>> m_line;
+    unique_ptr<DownLayer> new_layer = unique_ptr<DownLayer>(new DownLayer);
+};
+
+// #########################################
+template <typename T, T defval>
+class Matrix<T, 0, defval>
+{
+public:
+    using UpLayer = Matrix<T, 1, defval>;
+
+    void operator=(const T& value)
+    {
+        if (value == defval)
+            up->erase();
+        else if (data == defval)
+        {
+            data = value;
+            up->update();
+        }
+        else
+            data = value;
+    }
+
+    friend ostream& operator<<(ostream& os, Matrix& m)
+    {
+        os << m.data;
+        return os;
+    }
+
+    void set_up_layer(UpLayer* u)
+    {
+        up = u;
+    }
+
+    bool operator==(const T& value)
+    {
+        return data == value;
+    }
+
+private:
+    T data = defval;
+    UpLayer* up;
 };

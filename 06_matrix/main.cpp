@@ -1,8 +1,19 @@
+#include <cassert>
 #include "matrix.hpp"
 
 int main()
 {
-    Matrix<int, 0> matrix;
+    Matrix<int, 2, -1> matrix0;
+    assert(matrix0.size() == 0); // все ячейки свободны
+    auto a = matrix0[0][0];
+    assert(a == -1);
+    assert(matrix0.size() == 0);
+    matrix0[100][100] = 314;
+    assert(matrix0[100][100] == 314);
+    assert(matrix0.size() == 1);
+    
+
+    Matrix<int, 2, 0> matrix;
 
     for (auto i = 0; i < 10; ++i)
         matrix[i][i] = i;
@@ -20,7 +31,6 @@ int main()
     }
 
     cout << "Size: " << matrix.size() << endl;
-    matrix.print();
 
     return 0;
 }
